@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Earn & Save</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f5f5 0%, #e8f5e9 100%);
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+      padding-bottom: 60px; /* Footer height */
+    }
+    header {
+      background: linear-gradient(135deg, #2e7d32 0%, #388e3c 100%);
+      color: #ffffff;
+      padding: 18px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background: #388e3c;
+      color: white;
+      padding: 10px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    nav button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 20px;
+      transition: all 0.3s;
+    }
+    nav button:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    nav button.active {
+      background: rgba(255,255,255,0.2);
+      border-bottom: 3px solid #fff;
+    }
+    .container {
+      padding: 15px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .card {
+      background: white;
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    /* --- New Styles for Updated Sections --- */
+    .earn-item, .deal-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .earn-item:last-child, .deal-item:last-child {
+      border-bottom: none;
+    }
+    .earn-item img, .deal-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      object-fit: cover;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .earn-item-content h4 {
+      margin: 0 0 5px 0;
+      font-size: 16px;
+      color: #2e7d32;
+    }
+    .earn-item-content p {
+      margin: 0;
+      font-size: 14px;
+      color: #666;
+    }
+    .category-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #2e7d32;
+        padding-bottom: 5px;
+        color: #2e7d32;
+    }
+    .deal-item .deal-link {
+        margin-left: auto;
+        background: #2e7d32;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: bold;
+        white-space: nowrap;
+        transition: all 0.3s;
+    }
+    .deal-item .deal-link:hover {
+        background: #1b5e20;
+        transform: scale(1.05);
+    }
+    /* Festival Tab Specific Style */
+    #festival .card {
+        border-left: 5px solid #ff9800; /* Festive orange border */
+        background: linear-gradient(to right, #fff8e1, white);
+    }
+    
+    /* --- Dark Mode --- */
+    .dark {
+      background: linear-gradient(135deg, #1e1e1e 0%, #121212 100%);
+      color: #ddd;
+    }
+    .dark .card {
+      background: #2c2c2c;
+      color: #ddd;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    }
+    .dark .earn-item-content p { color: #aaa; }
+    .dark .earn-item-content h4 { color: #4caf50; }
+    .dark .deal-link { background: #388e3c; }
+    .dark .deal-link:hover { background: #2e7d32; }
+    .dark .category-title { 
+        border-bottom-color: #388e3c; 
+        color: #4caf50;
+    }
+    .dark footer {
+      background: #111;
+      color: #bbb;
+    }
+    .dark select {
+        background: #333;
+        color: #fff;
+    }
+    .dark #festival .card {
+        background: linear-gradient(to right, #332900, #2c2c2c);
+    }
+
+    footer {
+      background: #2e7d32;
+      color: #fff;
+      text-align: center;
+      padding: 12px;
+      font-size: 14px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+    }
+    select {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: white;
+    }
+    
+    /* Animation for tab switching */
+    .tab {
+      animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <header>Earn & Save</header>
+
+  <nav>
+    <button onclick="showTab('earn')" id="tab-earn" class="active">Daily Earn</button>
+    <button onclick="showTab('deals')" id="tab-deals">Discounts</button>
+    <button onclick="showTab('festival')" id="tab-festival">नवरात्रि उत्सव</button>
+    <button onclick="showTab('settings')" id="tab-settings">Settings</button>
+  </nav>
+
+  <div class="container">
+
+    <div id="earn" class="tab">
+      <h2>Daily Earn Apps</h2>
+      <div id="earnContent" class="card">
+        <div style="text-align: center; padding: 20px;">
+          <div class="loading" style="border-top-color: #2e7d32; margin: 0 auto;"></div>
+          <p>Loading earn apps...</p>
+        </div>
+      </div>
+      <div class="card">
+        <p id="countdown" style="text-align:center; font-weight:bold;"></p>
+      </div>
+    </div>
+
+    <div id="deals" class="tab" style="display:none;">
+      <h2>Hot Discounts</h2>
+      
+      <h3 class="category-title">इलेक्ट्रॉनिक्स (Electronics)</h3>
+      <div class="card">
+        <div class="deal-item">
+            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&h=100&q=80" alt="Mobile">
+            <div class="earn-item-content">
+                <h4>Flipkart Big Billion Days</h4>
+                <p>Mobiles पर 40% तक की छूट।</p>
+            </div>
+            <a href="https://www.flipkart.com/offers" target="_blank" class="deal-link">Check Now</a>
+        </div>
+        <div class="deal-item">
+            <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&h=100&q=80" alt="Laptop">
+            <div class="earn-item-content">
+                <h4>Amazon Great Indian Festival</h4>
+                <p>Laptops पर शानदार ऑफर्स।</p>
+            </div>
+            <a href="https://www.amazon.in/deals" target="_blank" class="deal-link">Check Now</a>
+        </div>
+        <div class="deal-item">
+            <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&h=100&q=80" alt="AC">
+            <div class="earn-item-content">
+                <h4>Croma Festival of Dreams</h4>
+                <p>ACs & Appliances पर आकर्षक छूट।</p>
+            </div>
+            <a href="#" target="_blank" class="deal-link">Explore</a>
+        </div>
+      </div>
+
+      <h3 class="category-title">फर्नीचर (Furniture)</h3>
+      <div class="card">
+        <div class="deal-item">
+            <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&h=100&q=80" alt="Sofa">
+            <div class="earn-item-content">
+                <h4>Pepperfry Grand Deals</h4>
+                <p>सोफा और लिविंग रूम फर्नीचर पर 50% तक की छूट।</p>
+            </div>
+            <a href="#" target="_blank" class="deal-link">View Deal</a>
+        </div>
+         <div class="deal-item">
+            <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&h=100&q=80" alt="Bed">
+            <div class="earn-item-content">
+                <h4>Urban Ladder Specials</h4>
+                <p>बेड और मैट्रेस पर खास कॉम्बो ऑफर्स।</p>
+            </div>
+            <a href="#" target="_blank" class="deal-link">View Deal</a>
+        </div>
+      </div>
+      
+      <h3 class="category-title">ग्रॉसरी (Grocery)</h3>
+       <div class="card">
+        <div class="deal-item">
+            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&h=100&q=80" alt="Groceries">
+            <div class="earn-item-content">
+                <h4>BigBasket Monthly Sale</h4>
+                <p>महीने की ग्रॉसरी पर 25% तक की बचत।</p>
+            </div>
+            <a href="#" target="_blank" class="deal-link">Shop Now</a>
+        </div>
+         <div class="deal-item">
+            <img src="https://images.unsplash.com/photo-1592924356291-6b58306fe500?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&h=100&q=80" alt="Veggies">
+            <div class="earn-item-content">
+                <h4>Blinkit Express Deals</h4>
+                <p>ताज़ी सब्जियों और फलों पर स्पेशल डिस्काउंट।</p>
+            </div>
+            <a href="#" target="_blank" class="deal-link">Shop Now</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="festival" class="tab" style="display:none;">
+      <h2>नवरात्रि उत्सव (Navratri Festival)</h2>
+      <div class="card">
+        <h4>एथनिक वियर पर धूम!</h4>
+        <div class="deal-item">
+            <img src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&h=100&q=80" alt="Ethnic Wear">
+            <div class="earn-item-content">
+                <p>Myntra & Ajio पर गरबा ड्रेसेस और एथनिक वियर पर <strong>50-70%</strong> की छूट।</p>
+            </div>
+            <a href="#" target="_blank" class="deal-link">Shop Now</a>
+        </div>
+      </div>
+       <div class="card">
+        <h4>व्रत का सामान</h4>
+        <div class="deal-item">
+            <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&h=100&q=80" alt="Fasting Food">
+            <div class="earn-item-content">
+                <p>BigBasket पर व्रत के सामान (कुट्टू, सिंघाड़ा) पर स्पेशल कॉम्बो ऑफर्स।</p>
+            </div>
+            <a href="#" target="_blank" class="deal-link">Order Now</a>
+        </div>
+      </div>
+      <div class="card">
+        <h4>डांडिया नाइट्स</h4>
+        <div class="deal-item">
+            <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&h=100&q=80" alt="Dandiya Events">
+            <div class="earn-item-content">
+                <p>Paytm Insider से अपने शहर के बेस्ट डांडिया इवेंट्स के टिकट बुक करें।</p>
+            </div>
+            <a href="#" target="_blank" class="deal-link">Book Now</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="settings" class="tab" style="display:none;">
+      <h2>App Settings</h2>
+      <div class="card">
+        <label for="themeSelect">Theme:</label><br>
+        <select id="themeSelect" onchange="changeTheme(this.value)">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+      <div class="card">
+        <h3>About Wexaur</h3>
+          <h4>wexaur</h4>  
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>© 2025 | Powered by Wexaur. | All rights reserved.</footer>
+
+  <script>
+    // Tabs
+    function showTab(tabId) {
+      document.querySelectorAll('.tab').forEach(t => t.style.display = "none");
+      document.getElementById(tabId).style.display = "block";
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById("tab-"+tabId).classList.add("active");
+      
+      // Update page title based on active tab
+      const tabNames = {
+        'earn': 'Daily Earn',
+        'deals': 'Discounts',
+        'festival': 'नवरात्रि उत्सव',
+        'settings': 'Settings'
+      };
+      document.title = `Wexaur - ${tabNames[tabId]}`;
+    }
+
+    // Daily Earn Logic - Updated with Objects
+    const earnApps = [
+      {
+        logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' width='48px' height='48px'%3E%3Cpath fill='%234285F4' d='M24 9.8C20.2 9.8 17.1 11.6 15 14.3l5.3 5.3c.8-1.4 2.3-2.4 4-2.4 2.6 0 4.7 2.1 4.7 4.7s-2.1 4.7-4.7 4.7c-1.7 0-3.2-1-4-2.4l-5.3 5.3c2.1 2.8 5.2 4.5 8.9 4.5 6.2 0 11.2-5 11.2-11.2S30.2 9.8 24 9.8z'/%3E%3Cpath fill='%2334A853' d='M9.8 24c0-3.8 1.7-7 4.5-9.2L9 9.5C5.1 13.1 2.8 18.3 2.8 24s2.3 10.9 6.2 14.5l5.3-5.3C11.6 31 9.8 27.8 9.8 24z'/%3E%3Cpath fill='%23FBBC05' d='M15 33.7l-5.3 5.3C5.1 34.9 2.8 29.7 2.8 24s2.3-10.9 6.2-14.5l5.3 5.3c-2.8 2.1-4.5 5.2-4.5 8.9z'/%3E%3Cpath fill='%23EA4335' d='M33.7 15l5.3-5.3C34.9 5.1 29.7 2.8 24 2.8S13.1 5.1 9 9.5l5.3 5.3c2.1-2.8 5.2-4.5 8.9-4.5 3.8 0 7 1.7 9.2 4.5z'/%3E%3C/svg%3E",
+        name: "Google Opinion Rewards",
+        desc: "छोटे सर्वे पूरे करके Google Play क्रेडिट कमाएं।"
+      },
+      {
+        logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234688F1' d='M12 2A10 10 0 1 0 12 22A10 10 0 1 0 12 2z'/%3E%3Cpath fill='white' d='M12 6.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1.5 2a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm1.5 2a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1.5 2a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm1.5 2a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1.5 2a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm1.5 2a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z'/%3E%3C/svg%3E",
+        name: "Swagbucks",
+        desc: "सर्वे, वीडियो देखने और शॉपिंग पर पॉइंट्स कमाएं।"
+      },
+       {
+        logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23F44336' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H8v-2h3V7h2v4h3v2h-3v4h-2z'/%3E%3C/svg%3E",
+        name: "Roz Dhan",
+        desc: "न्यूज़ पढ़ने, गेम खेलने और टास्क पूरे करके पैसे कमाएँ।"
+      }
+    ];
+    let lastTime = localStorage.getItem("lastTime");
+    
+    function updateEarnContent() {
+      const now = Date.now();
+      if (!lastTime || now - lastTime >= 24*60*60*1000) {
+        localStorage.setItem("lastTime", now);
+        lastTime = now;
+      }
+      
+      let contentHTML = '';
+      earnApps.forEach(app => {
+          contentHTML += `
+            <div class="earn-item">
+                <img src="${app.logo}" alt="${app.name} logo">
+                <div class="earn-item-content">
+                    <h4>${app.name}</h4>
+                    <p>${app.desc}</p>
+                </div>
+            </div>
+          `;
+      });
+      document.getElementById("earnContent").innerHTML = contentHTML;
+      updateCountdown();
+    }
+
+    function updateCountdown() {
+      let nextTime = parseInt(lastTime) + 24*60*60*1000;
+      let interval = setInterval(() => {
+        let diff = nextTime - Date.now();
+        if (diff <= 0) {
+          clearInterval(interval);
+          document.getElementById("countdown").innerText = "New tips are ready!";
+          return;
+        }
+        let hrs = Math.floor(diff/(1000*60*60));
+        let mins = Math.floor((diff%(1000*60*60))/(1000*60));
+        let secs = Math.floor((diff%(1000*60))/1000);
+        document.getElementById("countdown").innerText =
+          `Next Refresh in: ${hrs}h ${mins}m ${secs}s`;
+      },1000);
+    }
+
+    // Load saved theme on startup
+    window.onload = () => {
+      const savedTheme = localStorage.getItem("theme") || "light";
+      document.getElementById("themeSelect").value = savedTheme;
+      if(savedTheme === "dark") document.body.classList.add("dark");
+      
+      // Initialize earn content after page loads
+      setTimeout(() => {
+        updateEarnContent();
+      }, 500); // Small delay to show loading animation
+    };
+
+    // Theme Change
+    function changeTheme(theme) {
+      if(theme==="dark") {
+        document.body.classList.add("dark");
+      } else {
+        document.body.classList.remove("dark");
+      }
+      localStorage.setItem("theme", theme);
+    }
+  </script>
+</body>
+</html>
